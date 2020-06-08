@@ -37,7 +37,7 @@ def GetInput(message, isCommand=False, inputType=str, date=False):
                     try:
                         answer[x] = int(answer[x])
                         answer[x] = GetInput(
-                            "{0} is not a string. Please enter a string".format(answer[x]))
+                            "{0} is not a string. Please enter a string: ".format(answer[x]))
                     except ValueError:
                         continue
             return " ".join(answer)
