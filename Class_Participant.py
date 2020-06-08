@@ -122,13 +122,15 @@ class Participant:
     def schoolDistrict(self, newSchool):
         if newSchool is None:
             return
-        newSchool = newSchool.upper()
         with open("schoolDistricts.md") as file:
             text = file.read()
         text = text.split("\n\n")
-        while newSchool not in text:
+        while True:
+            newSchool = newSchool.upper()
+            if newSchool in text:
+                break
             print("Invalid school District")
-            self.schoolDistrict = Func.GetInput("Please enter your school district: ")
+            newSchool = Func.GetInput("Please enter your school district: ")
         self._schoolDistrict = newSchool
 
     @birthday.setter

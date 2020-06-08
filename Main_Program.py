@@ -8,7 +8,8 @@ def main():
     if state == "Running" and len(Func.allParticipants) > 0:
         if Func.allParticipants[-1].score is None:
             del Func.allParticipants[-1]
-    if answer is not None and answer is str:
+
+    if answer is not None and type(answer) is str:
         state = answer
 
 
