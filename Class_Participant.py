@@ -55,7 +55,7 @@ class Participant:
                 print("Invalid input. Please enter 'birthday' or 'age'")
                 confirmation = Func.GetInput("Do you want to change birthday or age?")
             if confirmation.upper() == "BIRTHDAY":
-                self.birthday = Func.GetInput("Please enter your birthday: ", date=True)
+                self.birthday = Func.GetInput("Please enter your birthday (mm/dd/yyyy): ", date=True)
             else:
                 self.Age = Func.GetInput("Please enter your age: ", inputType=int)
 
