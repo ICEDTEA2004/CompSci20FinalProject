@@ -8,7 +8,6 @@ class Participant:
     def __init__(self):
         Main.state = "Inputting"
         print("----Enter participant's information----\n")
-
         self.Id = Func.GetInput("Please enter your Id: ", inputType=int)
         self.Name = Func.GetInput("Please enter your full name: ")
         self.Age = Func.GetInput("Please enter your age: ", inputType=int)
