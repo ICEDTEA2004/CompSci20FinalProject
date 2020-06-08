@@ -23,7 +23,6 @@ def GetInput(message, isCommand=False, inputType=str):
         answer = answer.split()  # break into a list
 
     if not isCommand:
-        # TODO: loop through the list and convert it all to int for every input
         if inputType is not str:
             try:
                 answer[0] = inputType(answer[0])
@@ -83,7 +82,19 @@ def Search():
 
 
 def TestPrint():
-    print(allParticipants)
+    if len(allParticipants) > 0:
+        print(allParticipants[-1])
+    else:
+        print("There's no entry")
+
+
+def ExitProg():
+    confirm = input("Are you sure you want to exit? (Y for yes, N for No) ")
+    confirm = confirm.upper()
+    while confirm not in ["Y", "N"]:
+        confirm = input("Enter Y for yes, N for No: ")
+    if confirm == "Y":
+        return "Exiting"
 
 
 commandList = {"ADD": Add,
@@ -93,6 +104,7 @@ commandList = {"ADD": Add,
                "SHOW": ShowL,
                "SEARCH": Search,
                "PRINT": TestPrint,
+               "EXIT": ExitProg,
                }
 
 allParticipants = []

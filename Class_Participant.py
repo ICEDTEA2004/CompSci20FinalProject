@@ -7,7 +7,6 @@ class Participant:
     def __init__(self):
         Main.state = "Inputting"
         print("----Enter participant's information----\n")
-
         self.Id = Func.GetInput("Please enter your Id: ", inputType=int)
         self.Age = Func.GetInput("Please enter your age: ", inputType=int)
         self.Name = Func.GetInput("Please enter your full name: ")
@@ -21,12 +20,16 @@ class Participant:
 
     def __del__(self):
         if self.Id is None:
-            print("Deleting this participant")
+            print("Deleting this participant\n")
         else:
-            print("Deleting participant ", self.Id)
+            print("Deleting participant ", self.Id, "\n")
 
     def __str__(self):
-        pass
+        allInformation = \
+            [str(self.Id), str(self.Age),
+             self.Name, self.email, self.schoolDistrict,
+             self.birthday, self.competition, str(self.score)]
+        return " ".join(allInformation)
 
     @property
     def Id(self):
@@ -119,26 +122,28 @@ class Participant:
     def schoolDistrict(self, newSchool):
         if newSchool is None:
             return
-        newSchool = newSchool.upper()
         with open("schoolDistricts.md") as file:
             text = file.read()
         text = text.split("\n\n")
-        while newSchool not in text:
+        while True:
+            newSchool = newSchool.upper()
+            if newSchool in text:
+                break
             print("Invalid school District")
-            self.schoolDistrict = Func.GetInput("Please enter your school district: ")
+            newSchool = Func.GetInput("Please enter your school district: ")
         self._schoolDistrict = newSchool
 
     @birthday.setter
     def birthday(self, newBirth):
         if newBirth is None:
             return
-        pass
+        self._birthday = newBirth
 
     @competition.setter
     def competition(self, newComp):
         if newComp is None:
             return
-        pass
+        self._competition = newComp
 
     @score.setter
     def score(self, newScore):
