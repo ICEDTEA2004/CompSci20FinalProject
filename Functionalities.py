@@ -24,10 +24,16 @@ def GetInput(message, isCommand=False, inputType=str):
                 answer[0] = inputType(answer[0])
             except ValueError:
                 answer[0] = GetInput(
-                    "{0} is an invalid input. Please enter a {1} type".format(answer[0], inputType.__name__),
+                    "{0} is an invalid input. Please enter a {1} type: ".format(answer[0], inputType.__name__),
                     inputType=inputType)
             return answer[0]
         else:
+            for x in range(answer):
+                try:
+                    answer[x] = int(answer[x])
+                except ValueError:
+                    answer[x] = GetInput(
+                        "{0} is not a string. Please enter a string".format(answer[x]))
             return " ".join(answer)
 
     else:

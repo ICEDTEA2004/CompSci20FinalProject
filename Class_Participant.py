@@ -5,7 +5,7 @@ import re  # to use search() for checking email
 class Participant:
     def __init__(self):
         print("----Enter participant's information----\n")
-        self.Id = Func.GetInput("Please enter your Id: ")
+        self.Id = Func.GetInput("Please enter your Id: ",inputType=int)
         self.Age = Func.GetInput("Please enter your age: ", inputType=int)
         self.Name = Func.GetInput("Please enter your full name: ")
         self.email = Func.GetInput("Please enter your email: ")
@@ -15,11 +15,11 @@ class Participant:
         self.score = Func.GetInput("Please enter your score: ", inputType=float)
         print("----    Done Entering Information    ----\n")
 
-    def __del__(self):
-        if self.Id is None:
-            print("Deleting this participant")
-        else:
-            print("Deleting participant ", self.Id)
+    # def __del__(self):
+    #     if self.Id is None:
+    #         print("Deleting this participant")
+    #     else:
+    #         print("Deleting participant ", self.Id)
 
     def __str__(self):
         pass
@@ -68,7 +68,7 @@ class Participant:
     def Id(self, newId):
         while len(str(newId)) != 8:
             print("Invalid ID")
-            newId = Func.GetInput("Please enter your ID: ")
+            newId = Func.GetInput("Please enter your ID: ",inputType=int)
         self._Id = newId
 
     @Age.setter
