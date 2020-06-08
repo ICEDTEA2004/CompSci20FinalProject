@@ -7,13 +7,14 @@ class Participant:
     def __init__(self):
         Main.state = "Inputting"
         print("----Enter participant's information----\n")
+        self.competition = Func.GetInput("Please enter your competition: ")
+
         self.Id = Func.GetInput("Please enter your Id: ", inputType=int)
         self.Age = Func.GetInput("Please enter your age: ", inputType=int)
         self.Name = Func.GetInput("Please enter your full name: ")
         self.schoolDistrict = Func.GetInput("Please enter your school district: ")
         self.email = Func.GetInput("Please enter your email: ")
         self.birthday = Func.GetInput("Please enter your birthday: ")
-        self.competition = Func.GetInput("Please enter your competition: ")
         self.score = Func.GetInput("Please enter your score: ", inputType=float)
         print("----    Done Entering Information    ----\n")
         Main.state = "Running"
@@ -129,7 +130,7 @@ class Participant:
             newSchool = newSchool.upper()
             if newSchool in text:
                 break
-            print("Invalid school District")
+            print("Invalid school District. Type help for the list")
             newSchool = Func.GetInput("Please enter your school district: ")
         self._schoolDistrict = newSchool
 
@@ -143,6 +144,15 @@ class Participant:
     def competition(self, newComp):
         if newComp is None:
             return
+        with open("Schools_And_Competitions\\Competitions.md") as file:
+            text = file.read()
+        text = text.split("\n")
+        newComp = newComp.upper()
+        while newComp not in text:
+            print("Invalid competition. Type help for the list")
+            newComp = Func.GetInput("Please enter your competition: ")
+            newComp = newComp.upper()
+
         self._competition = newComp
 
     @score.setter
