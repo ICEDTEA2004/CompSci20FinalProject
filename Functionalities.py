@@ -2,7 +2,7 @@ from Python.Final_Project.Class_Participant import *
 from Python.Final_Project import Main_Program as Main
 
 
-def GetInput(message, isCommand=False, inputType=str):
+def GetInput(message, isCommand=False, inputType=str, date=False):
     if Main.state == "Cancelling":
         return None
     answer = input(message)
@@ -32,13 +32,14 @@ def GetInput(message, isCommand=False, inputType=str):
                     inputType=inputType)
             return answer[0]
         else:
-            for x in range(len(answer)):
-                try:
-                    answer[x] = int(answer[x])
-                    answer[x] = GetInput(
-                        "{0} is not a string. Please enter a string".format(answer[x]))
-                except ValueError:
-                    continue
+            if not date:
+                for x in range(len(answer)):
+                    try:
+                        answer[x] = int(answer[x])
+                        answer[x] = GetInput(
+                            "{0} is not a string. Please enter a string".format(answer[x]))
+                    except ValueError:
+                        continue
             return " ".join(answer)
 
     else:
