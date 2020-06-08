@@ -89,7 +89,12 @@ def TestPrint():
 
 
 def ExitProg():
-    exit()
+    confirm = input("Are you sure you want to exit? (Y for yes, N for No) ")
+    confirm = confirm.upper()
+    while confirm not in ["Y", "N"]:
+        confirm = input("Enter Y for yes, N for No: ")
+    if confirm == "Y":
+        return "Exiting"
 
 
 commandList = {"ADD": Add,
