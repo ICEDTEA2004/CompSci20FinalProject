@@ -1,7 +1,10 @@
 from Python.Final_Project.Class_Participant import *
+from Python.Final_Project import Main_Program as Main
 
 
 def GetInput(message, isCommand=False, inputType=str):
+    if Main.state == "Cancelling":
+        return None
     answer = input(message)
     while len(answer) == 0 or len(answer.split()) == 0:
         answer = input(message)
@@ -11,7 +14,9 @@ def GetInput(message, isCommand=False, inputType=str):
         answer = possibleCommand
     elif possibleCommand == "CANCEL":
         if commandList[possibleCommand]() is True:  # cancelling
-            return None
+            if Main.state == "Inputting":
+                Main.state = "Cancelling"
+                return None
         else:
             return GetInput(message, isCommand, inputType)
     else:
@@ -28,12 +33,13 @@ def GetInput(message, isCommand=False, inputType=str):
                     inputType=inputType)
             return answer[0]
         else:
-            for x in range(answer):
+            for x in range(len(answer)):
                 try:
                     answer[x] = int(answer[x])
-                except ValueError:
                     answer[x] = GetInput(
                         "{0} is not a string. Please enter a string".format(answer[x]))
+                except ValueError:
+                    continue
             return " ".join(answer)
 
     else:
@@ -51,6 +57,7 @@ def Help():
 
 def Cancel():
     confirm = input("Are you sure you want to cancel? (Y for yes, N for No) ")
+    confirm = confirm.upper()
     while confirm not in ["Y", "N"]:
         confirm = input("Enter Y for yes, N for No: ")
     if confirm == "Y":
@@ -75,12 +82,17 @@ def Search():
     print("Search")
 
 
+def TestPrint():
+    print(allParticipants)
+
+
 commandList = {"ADD": Add,
                "HELP": Help,
                "CANCEL": Cancel,
                "SHOWF": ShowF,
                "SHOW": ShowL,
-               "SEARCH": Search
+               "SEARCH": Search,
+               "PRINT": TestPrint,
                }
 
 allParticipants = []
