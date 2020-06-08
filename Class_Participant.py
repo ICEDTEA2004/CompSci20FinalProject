@@ -161,6 +161,7 @@ class Participant:
         while True:
             newSchool = newSchool.upper()
             if newSchool in text:
+                print("aaaaa")
                 break
             print("Invalid school District. Type help for the list")
             newSchool = Func.GetInput("Please enter your school district: ")
