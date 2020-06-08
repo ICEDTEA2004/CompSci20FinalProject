@@ -21,12 +21,16 @@ class Participant:
 
     def __del__(self):
         if self.Id is None:
-            print("Deleting this participant")
+            print("Deleting this participant\n")
         else:
-            print("Deleting participant ", self.Id)
+            print("Deleting participant ", self.Id, "\n")
 
     def __str__(self):
-        pass
+        allInformation = \
+            [str(self.Id), str(self.Age),
+             self.Name, self.email, self.schoolDistrict,
+             self.birthday, self.competition, str(self.score)]
+        return " ".join(allInformation)
 
     @property
     def Id(self):
@@ -132,13 +136,13 @@ class Participant:
     def birthday(self, newBirth):
         if newBirth is None:
             return
-        pass
+        self._birthday = newBirth
 
     @competition.setter
     def competition(self, newComp):
         if newComp is None:
             return
-        pass
+        self._competition = newComp
 
     @score.setter
     def score(self, newScore):
