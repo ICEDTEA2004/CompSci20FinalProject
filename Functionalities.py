@@ -2,7 +2,7 @@ from Python.Final_Project.Class_Participant import *
 from Python.Final_Project import Main_Program as Main
 
 
-def GetInput(message, isCommand=False, inputType=str, date=False):
+def GetInput(message, isCommand=False, inputType=str, date=False, searching=False):
     if Main.state == "Cancelling":
         return None
     answer = input(message)
@@ -16,7 +16,7 @@ def GetInput(message, isCommand=False, inputType=str, date=False):
         if commandList[possibleCommand]() is True:  # cancelling
             if Main.state == "Inputting":
                 Main.state = "Cancelling"
-                return None
+            return None
         else:
             return GetInput(message, isCommand, inputType)
     else:
@@ -32,7 +32,7 @@ def GetInput(message, isCommand=False, inputType=str, date=False):
                     inputType=inputType)
             return answer[0]
         else:
-            if not date:
+            if not date and not searching:
                 for x in range(len(answer)):
                     try:
                         answer[x] = int(answer[x])
@@ -66,27 +66,129 @@ def Cancel():
         return False
 
 
-def Add():
-    allParticipants.append(Participant())
+def Add(data=None):
+    if data is None:
+        allParticipants.append(Participant())
+    else:
+        allParticipants.append(Participant(data))
 
 
 def ShowF():
-    print("Show First Name")
+    def Comp(entry):
+        return entry.firstName
+
+    if len(allParticipants) == 0:
+        print("There's no entry")
+        return
+    allParticipants.sort(key=Comp)
+    for x in allParticipants:
+        print(x)
+    # print([x for x in allParticipants])
 
 
 def ShowL():
-    print("Show Last Name")
+    def Comp(entry):
+        return entry.lastName
+
+    if len(allParticipants) == 0:
+        print("There's no entry")
+        return
+    allParticipants.sort(key=Comp)
+    for x in allParticipants:
+        print(x)
 
 
 def Search():
-    print("Search")
+    def FilterSchool(entry):
+        if entry.schoolDistrict == searchFor:
+            return True
+        else:
+            return False
 
+    def FilterFirstName(entry):
+        if entry.firstName.upper() == searchFor:
+            return True
+        else:
+            return False
 
-def TestPrint():
-    if len(allParticipants) > 0:
-        print(allParticipants[-1])
-    else:
+    def FilterLastName(entry):
+        if entry.lastName.upper() == searchFor:
+            return True
+        else:
+            return False
+
+    def FilterComp(entry):
+        if entry.competition == searchFor:
+            return True
+        else:
+            return False
+
+    if len(allParticipants) == 0:
         print("There's no entry")
+        return
+    searchFor = GetInput("What entry do you want to search for? ", searching=True)
+    if searchFor is None:
+        return
+    try:
+        searchFor = int(searchFor)
+        if searchFor in allId:
+            for x in allParticipants:
+                if x.Id == searchFor:
+                    print(x)
+                    return
+        else:
+            print("There's no ID like ", searchFor)
+            Search()
+            return
+    except ValueError:
+        pass
+    org = searchFor
+    searchFor = searchFor.upper()
+
+    with open("Schools_And_Competitions/schoolDistricts.md") as file:
+        text = file.read()
+    text = text.split("\n\n")
+    if searchFor in text:
+        schoolEntries = list(filter(FilterSchool, allParticipants))
+
+        if len(schoolEntries) > 0:
+            ListPrint(schoolEntries)
+            return
+
+    with open("Schools_And_Competitions/Competitions.md") as file:
+        text = file.read()
+    text = text.split("\n")
+    if searchFor in text:
+        competitions = list(filter(FilterComp, allParticipants))
+        if len(competitions) > 0:
+            ListPrint(competitions)
+            return
+    firstNameEntries = list(filter(FilterFirstName, allParticipants))
+    if len(firstNameEntries) == 0:
+        lastNameEntries = list(filter(FilterLastName, allParticipants))
+        if len(lastNameEntries) > 0:
+            ListPrint(lastNameEntries)
+            return
+    else:
+        ListPrint(firstNameEntries)
+        return
+    print("Can't find '{0}'".format(org))
+    Search()
+
+
+def ListPrint(listOFEntries=None):
+    def SortId(entry):
+        return entry.Id
+
+    if listOFEntries is None:
+        if len(allParticipants) > 0:
+            print(allParticipants[-1])
+        else:
+            print("There's no entry")
+    else:
+        listOFEntries.sort(key=SortId)
+        for x in listOFEntries:
+            print(x)
 
 
 def ExitProg():
@@ -98,14 +200,32 @@ def ExitProg():
         return "Exiting"
 
 
+def Open():
+    fileName = GetInput("Please enter the file name: ")
+    if fileName is None:
+        return None
+    try:
+        with open("Saved Database/" + fileName) as file:
+            text = file.read()
+        text = text.split("\n")
+        if len(text) != 0:
+            for x in text:
+                Add(x)
+    except FileNotFoundError:
+        print("There's no file called " + fileName + ". Please try again")
+        Open()
+
+
 commandList = {"ADD": Add,
                "HELP": Help,
                "CANCEL": Cancel,
                "SHOWF": ShowF,
                "SHOW": ShowL,
                "SEARCH": Search,
-               "PRINT": TestPrint,
+               "PRINT": ListPrint,
                "EXIT": ExitProg,
+               "OPEN": Open,
                }
 
 allParticipants = []
+allId = set()
