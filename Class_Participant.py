@@ -5,18 +5,56 @@ import datetime
 
 
 class Participant:
-    def __init__(self):
+    def __init__(self, loadData=None):
         Main.state = "Inputting"
-        print("----Enter participant's information----\n")
-        self.Id = Func.GetInput("Please enter your Id: ", inputType=int)
-        self.Name = Func.GetInput("Please enter your full name: ")
-        self.Age = Func.GetInput("Please enter your age: ", inputType=int)
-        self.birthday = Func.GetInput("Please enter your birthday (mm/dd/yyyy): ", date=True)
-        self.schoolDistrict = Func.GetInput("Please enter your school district: ")
-        self.email = Func.GetInput("Please enter your email: ")
-        self.competition = Func.GetInput("Please enter your competition: ")
-        self.score = Func.GetInput("Please enter your score: ", inputType=float)
-        print("----    Done Entering Information    ----\n")
+
+        if loadData is None:
+            print("----Enter participant's information----\n")
+            self.Id = Func.GetInput("Please enter your Id: ", inputType=int)
+            self.Name = Func.GetInput("Please enter your full name: ")
+            self.Age = Func.GetInput("Please enter your age: ", inputType=int)
+            self.birthday = Func.GetInput("Please enter your birthday (mm/dd/yyyy): ", date=True)
+            self.schoolDistrict = Func.GetInput("Please enter your school district: ")
+            self.email = Func.GetInput("Please enter your email: ")
+            self.competition = Func.GetInput("Please enter your competition: ")
+            self.score = Func.GetInput("Please enter your score: ", inputType=float)
+            print("----    Done Entering Information    ----\n")
+        else:
+            information = loadData.split()
+            try:
+                self.Id = int(information[0])
+            except ValueError:
+                print(information[0] + " is not a valid ID")
+                self.Id = Func.GetInput("Please enter your Id: ", inputType=int)
+            dummyName = ""
+            lastIndex = 1
+            for x in information[1:]:
+                try:
+                    int(x)
+                    break
+                except ValueError:
+                    dummyName += x + " "
+                    lastIndex += 1
+
+            self.Name = dummyName
+            try:
+                self.Age = int(information[lastIndex])
+            except ValueError:
+                print(information[lastIndex] + " is not a valid age.")
+                self.Age = Func.GetInput("Please enter your age: ", inputType=int)
+            lastIndex += 1
+            self.birthday = information[lastIndex]
+            lastIndex += 1
+            self.schoolDistrict = information[lastIndex]
+            lastIndex += 1
+            self.email = information[lastIndex]
+            lastIndex += 1
+            try:
+                self.score = float(information[-1])
+            except ValueError:
+                print(information[-1] + " is an invalid score")
+                self.score = Func.GetInput("Please enter your score: ", inputType=float)
+            self.competition = " ".join(information[lastIndex:-1])
         Main.state = "Running"
 
     def __del__(self):
@@ -28,8 +66,8 @@ class Participant:
     def __str__(self):
         allInformation = \
             [str(self.Id), self.Name,
-             str(self.Age), self.email, self.schoolDistrict,
-             str(self.birthday.date()), self.competition, str(self.score)]
+             str(self.Age), str(self.birthday.date()), self.schoolDistrict,
+             self.email, self.competition, str(self.score)]
         return " ".join(allInformation)
 
     def CalculateAge(self, birth):
@@ -139,10 +177,10 @@ class Participant:
             print("You're missing last name")
             newName = Func.GetInput("Please enter full name: ")
 
-        newName.split()
+        newName = newName.split()
         self._firstName = newName[0]
         self._lastName = " ".join(newName[1:])
-        self._Name = newName
+        self._Name = self.firstName + " " + self.lastName
 
     @email.setter
     def email(self, newEmail):
@@ -151,7 +189,6 @@ class Participant:
         regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
         while re.search(regex, newEmail) is None:
             print("Invalid email.")
-            print(newEmail)
             newEmail = Func.GetInput("Please enter your email: ")
         self._email = newEmail
 
@@ -163,8 +200,8 @@ class Participant:
             text = file.read()
         text = text.split("\n\n")
         while True:
-            newSchool = newSchool.upper()
-            if newSchool in text:
+            dummySchool = newSchool.upper().replace(" ", "_")
+            if dummySchool in text:
                 break
             print("Invalid school District. Type help for the list")
             newSchool = Func.GetInput("Please enter your school district: ")
@@ -174,15 +211,14 @@ class Participant:
     def birthday(self, newBirth):
         if newBirth is None:
             return
-        patterns = ['%m/%d/%Y', '%m %d %Y', '%m-%d-%Y']
-
+        patterns = ['%m/%d/%Y', '%m %d %Y','%m-%d-%Y' ,'%Y-%m-%d']
         while type(newBirth) is str:
             for x in range(len(patterns)):
                 try:
                     newBirth = datetime.datetime.strptime(newBirth, patterns[x])
                     break
                 except ValueError:
-                    if x == 2:
+                    if x == len(patterns)-1:
                         print("Invalid birthday. Type help for valid formats")
                         newBirth = Func.GetInput("Please enter your birthday (mm/dd/yyyy): ", date=True)
         self._birthday = newBirth

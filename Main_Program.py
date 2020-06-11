@@ -9,9 +9,8 @@ def main():
         if Func.allParticipants[-1].score is None:
             if Func.allParticipants[-1].Id is not None:
                 Func.allId.remove(Func.allParticipants[-1].Id)
-                print(Func.allId)
             del Func.allParticipants[-1]
-
+    print()
     if answer is not None and type(answer) is str:
         state = answer
 

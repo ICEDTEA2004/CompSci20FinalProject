@@ -16,7 +16,7 @@ def GetInput(message, isCommand=False, inputType=str, date=False, searching=Fals
         if commandList[possibleCommand]() is True:  # cancelling
             if Main.state == "Inputting":
                 Main.state = "Cancelling"
-                return None
+            return None
         else:
             return GetInput(message, isCommand, inputType)
     else:
@@ -66,9 +66,11 @@ def Cancel():
         return False
 
 
-def Add():
-    allParticipants.append(Participant())
-
+def Add(data=None):
+    if data is None:
+        allParticipants.append(Participant())
+    else:
+        allParticipants.append(Participant(data))
 
 def ShowF():
     def Comp(entry):
@@ -96,6 +98,12 @@ def ShowL():
 
 
 def Search():
+    def FilterSchool(entry):
+        if entry.schoolDistrict == searchFor:
+            return True
+        else:
+            return False
+
     if len(allParticipants) == 0:
         print("There's no entry")
         return
@@ -113,12 +121,27 @@ def Search():
     except ValueError:
         pass
 
+    with open("Schools_And_Competitions/schoolDistricts.md") as file:
+        text = file.read()
+    text = text.split("\n\n")
+    if searchFor.upper() in text:
+        schoolEntries = filter(FilterSchool, allParticipants)
+        ListPrint(schoolEntries)
 
-def TestPrint():
-    if len(allParticipants) > 0:
-        print(allParticipants[-1])
+
+def ListPrint(listOFEntries=None):
+    def SortId(entry):
+        return entry.Id
+
+    if listOFEntries is None:
+        if len(allParticipants) > 0:
+            print(allParticipants[-1])
+        else:
+            print("There's no entry")
     else:
-        print("There's no entry")
+        listOFEntries.sort(key=SortId)
+        for x in listOFEntries:
+            print(x)
 
 
 def ExitProg():
@@ -129,6 +152,22 @@ def ExitProg():
     if confirm == "Y":
         return "Exiting"
 
+def Open():
+    fileName = GetInput("Please enter the file name: ")
+    if fileName is None:
+        return None
+    try:
+        with open("Saved Database/" + fileName) as file:
+            text = file.read()
+        text = text.split("\n")
+        print(text)
+        if len(text) != 0:
+            for x in text:
+                Add(x)
+    except FileNotFoundError:
+        print("There's no file called " + fileName + ". Please try again")
+        Open()
+
 
 commandList = {"ADD": Add,
                "HELP": Help,
@@ -136,8 +175,9 @@ commandList = {"ADD": Add,
                "SHOWF": ShowF,
                "SHOW": ShowL,
                "SEARCH": Search,
-               "PRINT": TestPrint,
+               "PRINT": ListPrint,
                "EXIT": ExitProg,
+               "OPEN": Open,
                }
 
 allParticipants = []
