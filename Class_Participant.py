@@ -27,8 +27,8 @@ class Participant:
 
     def __str__(self):
         allInformation = \
-            [str(self.Id), str(self.Age),
-             self.Name, self.email, self.schoolDistrict,
+            [str(self.Id), self.Name,
+             str(self.Age), self.email, self.schoolDistrict,
              str(self.birthday.date()), self.competition, str(self.score)]
         return " ".join(allInformation)
 
@@ -184,7 +184,7 @@ class Participant:
                 except ValueError:
                     if x == 2:
                         print("Invalid birthday. Type help for valid formats")
-                        newBirth = Func.GetInput("Please enter your birthday: ", date=True)
+                        newBirth = Func.GetInput("Please enter your birthday (mm/dd/yyyy): ", date=True)
         self._birthday = newBirth
         confirmation = self.CheckBirthAndAge()
         if type(confirmation) is str:

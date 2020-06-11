@@ -2,7 +2,7 @@ from Python.Final_Project.Class_Participant import *
 from Python.Final_Project import Main_Program as Main
 
 
-def GetInput(message, isCommand=False, inputType=str, date=False):
+def GetInput(message, isCommand=False, inputType=str, date=False, searching=False):
     if Main.state == "Cancelling":
         return None
     answer = input(message)
@@ -32,7 +32,7 @@ def GetInput(message, isCommand=False, inputType=str, date=False):
                     inputType=inputType)
             return answer[0]
         else:
-            if not date:
+            if not date and not searching:
                 for x in range(len(answer)):
                     try:
                         answer[x] = int(answer[x])
@@ -73,6 +73,7 @@ def Add():
 def ShowF():
     def Comp(entry):
         return entry.firstName
+
     if len(allParticipants) == 0:
         print("There's no entry")
         return
@@ -95,7 +96,22 @@ def ShowL():
 
 
 def Search():
-    print("Search")
+    if len(allParticipants) == 0:
+        print("There's no entry")
+        return
+    searchFor = GetInput("What entry do you want to search for? ", searching=True)
+    try:
+        searchFor = int(searchFor)
+        if searchFor in allId:
+            for x in allParticipants:
+                if x.Id == searchFor:
+                    print(x)
+                    return
+        else:
+            print("There's no Id like ", searchFor)
+            return
+    except ValueError:
+        pass
 
 
 def TestPrint():
@@ -103,7 +119,6 @@ def TestPrint():
         print(allParticipants[-1])
     else:
         print("There's no entry")
-
 
 
 def ExitProg():
