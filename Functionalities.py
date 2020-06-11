@@ -72,6 +72,7 @@ def Add(data=None):
     else:
         allParticipants.append(Participant(data))
 
+
 def ShowF():
     def Comp(entry):
         return entry.firstName
@@ -104,10 +105,30 @@ def Search():
         else:
             return False
 
+    def FilterFirstName(entry):
+        if entry.firstName.upper() == searchFor:
+            return True
+        else:
+            return False
+
+    def FilterLastName(entry):
+        if entry.lastName.upper() == searchFor:
+            return True
+        else:
+            return False
+
+    def FilterComp(entry):
+        if entry.competition == searchFor:
+            return True
+        else:
+            return False
+
     if len(allParticipants) == 0:
         print("There's no entry")
         return
     searchFor = GetInput("What entry do you want to search for? ", searching=True)
+    if searchFor is None:
+        return
     try:
         searchFor = int(searchFor)
         if searchFor in allId:
@@ -116,17 +137,43 @@ def Search():
                     print(x)
                     return
         else:
-            print("There's no Id like ", searchFor)
+            print("There's no ID like ", searchFor)
+            Search()
             return
     except ValueError:
         pass
+    org = searchFor
+    searchFor = searchFor.upper()
 
     with open("Schools_And_Competitions/schoolDistricts.md") as file:
         text = file.read()
     text = text.split("\n\n")
-    if searchFor.upper() in text:
-        schoolEntries = filter(FilterSchool, allParticipants)
-        ListPrint(schoolEntries)
+    if searchFor in text:
+        schoolEntries = list(filter(FilterSchool, allParticipants))
+
+        if len(schoolEntries) > 0:
+            ListPrint(schoolEntries)
+            return
+
+    with open("Schools_And_Competitions/Competitions.md") as file:
+        text = file.read()
+    text = text.split("\n")
+    if searchFor in text:
+        competitions = list(filter(FilterComp, allParticipants))
+        if len(competitions) > 0:
+            ListPrint(competitions)
+            return
+    firstNameEntries = list(filter(FilterFirstName, allParticipants))
+    if len(firstNameEntries) == 0:
+        lastNameEntries = list(filter(FilterLastName, allParticipants))
+        if len(lastNameEntries) > 0:
+            ListPrint(lastNameEntries)
+            return
+    else:
+        ListPrint(firstNameEntries)
+        return
+    print("Can't find '{0}'".format(org))
+    Search()
 
 
 def ListPrint(listOFEntries=None):
@@ -152,6 +199,7 @@ def ExitProg():
     if confirm == "Y":
         return "Exiting"
 
+
 def Open():
     fileName = GetInput("Please enter the file name: ")
     if fileName is None:
@@ -160,7 +208,6 @@ def Open():
         with open("Saved Database/" + fileName) as file:
             text = file.read()
         text = text.split("\n")
-        print(text)
         if len(text) != 0:
             for x in text:
                 Add(x)

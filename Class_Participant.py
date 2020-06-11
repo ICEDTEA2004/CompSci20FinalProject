@@ -205,7 +205,7 @@ class Participant:
                 break
             print("Invalid school District. Type help for the list")
             newSchool = Func.GetInput("Please enter your school district: ")
-        self._schoolDistrict = newSchool
+        self._schoolDistrict = newSchool.upper()
 
     @birthday.setter
     def birthday(self, newBirth):
