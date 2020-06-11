@@ -104,10 +104,14 @@ class Participant:
         if newId is None:
             self._Id = None
             return
-        while len(str(newId)) != 8:
-            print("Invalid ID")
+        while len(str(newId)) != 8 or newId in Func.allId:
+            if newId in Func.allId:
+                print("{0} already exists. Please enter another one.".format(newId))
+            else:
+                print("Invalid ID")
             newId = Func.GetInput("Please enter your ID: ", inputType=int)
         self._Id = newId
+        Func.allId.add(newId)
 
     @Age.setter
     def Age(self, newAge):

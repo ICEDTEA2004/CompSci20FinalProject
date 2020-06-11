@@ -71,11 +71,27 @@ def Add():
 
 
 def ShowF():
-    print("Show First Name")
+    def Comp(entry):
+        return entry.firstName
+    if len(allParticipants) == 0:
+        print("There's no entry")
+        return
+    allParticipants.sort(key=Comp)
+    for x in allParticipants:
+        print(x)
+    # print([x for x in allParticipants])
 
 
 def ShowL():
-    print("Show Last Name")
+    def Comp(entry):
+        return entry.lastName
+
+    if len(allParticipants) == 0:
+        print("There's no entry")
+        return
+    allParticipants.sort(key=Comp)
+    for x in allParticipants:
+        print(x)
 
 
 def Search():
@@ -87,6 +103,7 @@ def TestPrint():
         print(allParticipants[-1])
     else:
         print("There's no entry")
+
 
 
 def ExitProg():
@@ -109,3 +126,4 @@ commandList = {"ADD": Add,
                }
 
 allParticipants = []
+allId = set()
