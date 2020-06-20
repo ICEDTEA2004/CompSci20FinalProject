@@ -1,5 +1,5 @@
-from Python.Final_Project import Functionalities as Func
-from Python.Final_Project import Main_Program as Main
+from Final_Project import Functionalities as Func
+from Final_Project import Main_Program as Main
 import re  # to use search() for checking email
 import datetime
 
@@ -58,6 +58,9 @@ class Participant:
         Main.state = "Running"
 
     def __del__(self):
+        Main.state = Main.GetState()
+        if Main.state == "Exiting":
+            return
         if self.Id is None:
             print("Deleting this participant\n")
         else:
@@ -148,6 +151,9 @@ class Participant:
             else:
                 print("Invalid ID")
             newId = Func.GetInput("Please enter your ID: ", inputType=int)
+            if newId is None:
+                self._Id = None
+                return
         self._Id = newId
         Func.allId.add(newId)
 
@@ -211,14 +217,14 @@ class Participant:
     def birthday(self, newBirth):
         if newBirth is None:
             return
-        patterns = ['%m/%d/%Y', '%m %d %Y','%m-%d-%Y' ,'%Y-%m-%d']
+        patterns = ['%m/%d/%Y', '%m %d %Y', '%m-%d-%Y', '%Y-%m-%d']
         while type(newBirth) is str:
             for x in range(len(patterns)):
                 try:
                     newBirth = datetime.datetime.strptime(newBirth, patterns[x])
                     break
                 except ValueError:
-                    if x == len(patterns)-1:
+                    if x == len(patterns) - 1:
                         print("Invalid birthday. Type help for valid formats")
                         newBirth = Func.GetInput("Please enter your birthday (mm/dd/yyyy): ", date=True)
         self._birthday = newBirth

@@ -1,5 +1,5 @@
-from Python.Final_Project.Class_Participant import *
-from Python.Final_Project import Main_Program as Main
+from Final_Project.Class_Participant import *
+from Final_Project import Main_Program as Main
 
 
 def GetInput(message, isCommand=False, inputType=str, date=False, searching=False):
@@ -194,7 +194,7 @@ def ListPrint(listOFEntries=None):
 def ExitProg():
     confirm = input("Are you sure you want to exit? (Y for yes, N for No) ")
     confirm = confirm.upper()
-    while confirm not in ["Y", "N"]:
+    while confirm not in ["Y", "N", 'y', 'n']:
         confirm = input("Enter Y for yes, N for No: ")
     if confirm == "Y":
         return "Exiting"

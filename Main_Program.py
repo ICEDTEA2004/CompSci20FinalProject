@@ -1,4 +1,4 @@
-from Python.Final_Project import Functionalities as Func
+from Final_Project import Functionalities as Func
 
 
 def main():
@@ -15,9 +15,17 @@ def main():
         state = answer
 
 
+def GetState():
+    global state
+    print(state)
+    return state
+
+
 state = None
 
 if __name__ == '__main__':
     state = "Running"
     while state != "Exiting":
         main()
+    print(state)
+    print("ending")
