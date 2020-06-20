@@ -52,7 +52,9 @@ def GetInput(message, isCommand=False, inputType=str, date=False, searching=Fals
 
 
 def Help():
-    print("Help")
+    with open("README.md") as file:
+        text = file.read()
+    print(text)
 
 
 def Cancel():
@@ -271,6 +273,12 @@ def UpdateFile():
             for x in newData:
                 print(x, file=file)
     else:
+        confirm = GetInput("Are you sure to overwrite this file? ")
+        while confirm not in ["y", "Y", "N", "n"]:
+            print("Invalid input")
+            confirm = GetInput("Please enter y for Yes and n for No: ")
+        if confirm in ["N", "n"]:
+            return
         with open("Saved Database/" + currentFile, "w") as file:
             newData = ListPrint()
             for x in newData:
@@ -317,7 +325,6 @@ commandList = {"ADD": Add,
                "SHOWF": ShowF,
                "SHOW": ShowL,
                "SEARCH": Search,
-               "PRINT": ListPrint,
                "EXIT": ExitProg,
                "OPEN": Open,
                "DEL": DeleteEntry,
