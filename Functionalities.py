@@ -117,7 +117,22 @@ def ShowL():
     ListPrint(allParticipants)
 
 
-def Search():
+def ShowTop():
+    def Score(entry):
+        return entry.score
+    filteredList = Search(True)
+
+    if filteredList is not None:
+        filteredList.sort(key=Score,reverse=True)
+        for x in range(len(filteredList)):
+            if x == 3:
+                return
+            else:
+                print(filteredList[x])
+    return
+
+
+def Search(top=False):
     def FilterSchool(entry):
         if entry.schoolDistrict == searchFor:
             return True
@@ -145,7 +160,10 @@ def Search():
     if len(allParticipants) == 0:
         print("There's no entry")
         return
-    searchFor = GetInput("What entry do you want to search for? ", searching=True)
+    if top:
+        searchFor = GetInput("Top 3 of which competition? ")
+    else:
+        searchFor = GetInput("What entry do you want to search for? ", searching=True)
     if searchFor is None:
         return
     try:
@@ -176,8 +194,14 @@ def Search():
     text = text.split("\n")
     if searchFor in text:
         competitions = list(filter(FilterComp, allParticipants))
+        if top:
+            return competitions
         if len(competitions) > 0:
             ListPrint(competitions, True)
+            return
+    else:
+        if top:
+            print("There's no " + searchFor + " in current database")
             return
     firstNameEntries = list(filter(FilterFirstName, allParticipants))
     if len(firstNameEntries) == 0:
@@ -297,6 +321,7 @@ commandList = {"ADD": Add,
                "EXIT": ExitProg,
                "OPEN": Open,
                "DEL": DeleteEntry,
+               "TOP": ShowTop,
                }
 currentFile = None
 
