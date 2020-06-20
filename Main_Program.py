@@ -1,4 +1,4 @@
-from Python.Final_Project import Functionalities as Func
+from Final_Project import Functionalities as Func
 
 
 def main():
@@ -8,7 +8,7 @@ def main():
     if state == "Running" and len(Func.allParticipants) > 0:
         if Func.allParticipants[-1].score is None:
             if Func.allParticipants[-1].Id is not None:
-                Func.allId.remove(Func.allParticipants[-1].Id)
+                Func.allId.pop(Func.allParticipants[-1].Id)
             del Func.allParticipants[-1]
     print()
     if answer is not None and type(answer) is str:
@@ -16,8 +16,8 @@ def main():
 
 
 state = None
-
 if __name__ == '__main__':
     state = "Running"
     while state != "Exiting":
         main()
+

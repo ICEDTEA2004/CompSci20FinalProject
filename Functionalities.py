@@ -1,5 +1,5 @@
-from Python.Final_Project.Class_Participant import *
-from Python.Final_Project import Main_Program as Main
+from Final_Project.Class_Participant import *
+from Final_Project import Main_Program as Main
 
 
 def GetInput(message, isCommand=False, inputType=str, date=False, searching=False):
@@ -66,11 +66,32 @@ def Cancel():
         return False
 
 
+def DeleteEntry():
+    idToDel = GetInput("What entry do you want to delete? (Enter an ID) ", inputType=int)
+    if idToDel is None: # cancelling
+        return
+    while len(str(idToDel)) < 8:
+        idToDel = GetInput("Invalid ID")
+    if idToDel not in allId:
+        print("This ID does not exist")
+    else:
+        dummy = allId.pop(idToDel)
+
+        for x in range(len(allParticipants)):
+            if allParticipants[x] == dummy:
+                del allParticipants[x]
+                break
+
+
+
 def Add(data=None):
     if data is None:
         allParticipants.append(Participant())
+        allId[allParticipants[-1].Id] = allParticipants[-1]
     else:
         allParticipants.append(Participant(data))
+        if allParticipants[-1].Id is not None:
+            allId[allParticipants[-1].Id] = allParticipants[-1]
 
 
 def ShowF():
@@ -81,8 +102,7 @@ def ShowF():
         print("There's no entry")
         return
     allParticipants.sort(key=Comp)
-    for x in allParticipants:
-        print(x)
+    ListPrint(allParticipants)
     # print([x for x in allParticipants])
 
 
@@ -94,11 +114,25 @@ def ShowL():
         print("There's no entry")
         return
     allParticipants.sort(key=Comp)
-    for x in allParticipants:
-        print(x)
+    ListPrint(allParticipants)
 
 
-def Search():
+def ShowTop():
+    def Score(entry):
+        return entry.score
+    filteredList = Search(True)
+
+    if filteredList is not None:
+        filteredList.sort(key=Score,reverse=True)
+        for x in range(len(filteredList)):
+            if x == 3:
+                return
+            else:
+                print(filteredList[x])
+    return
+
+
+def Search(top=False):
     def FilterSchool(entry):
         if entry.schoolDistrict == searchFor:
             return True
@@ -126,20 +160,20 @@ def Search():
     if len(allParticipants) == 0:
         print("There's no entry")
         return
-    searchFor = GetInput("What entry do you want to search for? ", searching=True)
+    if top:
+        searchFor = GetInput("Top 3 of which competition? ")
+    else:
+        searchFor = GetInput("What entry do you want to search for? ", searching=True)
     if searchFor is None:
         return
     try:
         searchFor = int(searchFor)
         if searchFor in allId:
-            for x in allParticipants:
-                if x.Id == searchFor:
-                    print(x)
-                    return
+            print(allId[searchFor])
         else:
             print("There's no ID like ", searchFor)
             Search()
-            return
+        return
     except ValueError:
         pass
     org = searchFor
@@ -152,7 +186,7 @@ def Search():
         schoolEntries = list(filter(FilterSchool, allParticipants))
 
         if len(schoolEntries) > 0:
-            ListPrint(schoolEntries)
+            ListPrint(schoolEntries, True)
             return
 
     with open("Schools_And_Competitions/Competitions.md") as file:
@@ -160,25 +194,37 @@ def Search():
     text = text.split("\n")
     if searchFor in text:
         competitions = list(filter(FilterComp, allParticipants))
+        if top:
+            return competitions
         if len(competitions) > 0:
-            ListPrint(competitions)
+            ListPrint(competitions, True)
+            return
+    else:
+        if top:
+            print("There's no " + searchFor + " in current database")
             return
     firstNameEntries = list(filter(FilterFirstName, allParticipants))
     if len(firstNameEntries) == 0:
         lastNameEntries = list(filter(FilterLastName, allParticipants))
         if len(lastNameEntries) > 0:
-            ListPrint(lastNameEntries)
+            ListPrint(lastNameEntries, True)
             return
     else:
-        ListPrint(firstNameEntries)
+        ListPrint(firstNameEntries, True)
         return
     print("Can't find '{0}'".format(org))
     Search()
 
 
-def ListPrint(listOFEntries=None):
+def ListPrint(listOFEntries=None, search=False):
     def SortId(entry):
         return entry.Id
+
+    if Main.state == "Exiting":
+        if len(allParticipants) > 0:
+            return sorted(allParticipants,key=SortId)
+        else:
+            return None
 
     if listOFEntries is None:
         if len(allParticipants) > 0:
@@ -186,7 +232,8 @@ def ListPrint(listOFEntries=None):
         else:
             print("There's no entry")
     else:
-        listOFEntries.sort(key=SortId)
+        if search:
+            listOFEntries.sort(key=SortId)
         for x in listOFEntries:
             print(x)
 
@@ -194,25 +241,73 @@ def ListPrint(listOFEntries=None):
 def ExitProg():
     confirm = input("Are you sure you want to exit? (Y for yes, N for No) ")
     confirm = confirm.upper()
-    while confirm not in ["Y", "N"]:
+    while confirm not in ["Y", "N", 'y', 'n']:
         confirm = input("Enter Y for yes, N for No: ")
     if confirm == "Y":
+        Main.state = "Exiting"
+        UpdateFile()
         return "Exiting"
 
 
-def Open():
-    fileName = GetInput("Please enter the file name: ")
+def UpdateFile():
+    if currentFile is None:
+        fileName = GetInput("Please enter the name of the file you want to save as: ")
+        if fileName is None:  # cancelling
+            return
+        while Open(fileName):
+            if fileName is None:  # cancelling
+                return
+            print(fileName + " already exists")
+            confirm = GetInput("Are you sure to overwrite this file? ")
+            while confirm not in ["y","Y","N","n"]:
+                print("Invalid input")
+                confirm = GetInput("Please enter y for Yes and n for No: ")
+            if confirm in ["N","n"]:
+                fileName = GetInput("Please enter the name of the file you want to save as: ")
+                continue
+            break
+        with open("Saved Database/" + fileName, "w") as file:
+            newData = ListPrint()
+            for x in newData:
+                print(x, file=file)
+    else:
+        with open("Saved Database/" + currentFile, "w") as file:
+            newData = ListPrint()
+            for x in newData:
+                print(x, file=file)
+    return
+
+
+def Open(fileName=None):
+    global currentFile
+    if currentFile is not None:
+        print(currentFile + " is open")
+        return
+    checking = False
     if fileName is None:
-        return None
+        fileName = GetInput("Please enter the file name: ")
+        if fileName is None:
+            return None
+    else:
+        checking = True
+
     try:
+        if checking:
+            return False
         with open("Saved Database/" + fileName) as file:
             text = file.read()
         text = text.split("\n")
         if len(text) != 0:
             for x in text:
+                if len(x) == 0:
+                    continue
                 Add(x)
+        currentFile = fileName
     except FileNotFoundError:
-        print("There's no file called " + fileName + ". Please try again")
+        if checking:
+            return True
+        else:
+            print("There's no file called " + fileName + ". Please try again")
         Open()
 
 
@@ -225,7 +320,10 @@ commandList = {"ADD": Add,
                "PRINT": ListPrint,
                "EXIT": ExitProg,
                "OPEN": Open,
+               "DEL": DeleteEntry,
+               "TOP": ShowTop,
                }
+currentFile = None
 
 allParticipants = []
-allId = set()
+allId = dict()
