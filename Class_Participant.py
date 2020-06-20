@@ -58,7 +58,6 @@ class Participant:
         Main.state = "Running"
 
     def __del__(self):
-        Main.state = Main.GetState()
         if Main.state == "Exiting":
             return
         if self.Id is None:

@@ -197,6 +197,7 @@ def ExitProg():
     while confirm not in ["Y", "N", 'y', 'n']:
         confirm = input("Enter Y for yes, N for No: ")
     if confirm == "Y":
+        Main.state = "Exiting"
         return "Exiting"
 
 

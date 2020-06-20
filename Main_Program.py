@@ -15,17 +15,9 @@ def main():
         state = answer
 
 
-def GetState():
-    global state
-    print(state)
-    return state
-
-
 state = None
-
 if __name__ == '__main__':
     state = "Running"
     while state != "Exiting":
         main()
-    print(state)
-    print("ending")
+
