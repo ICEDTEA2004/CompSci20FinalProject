@@ -81,8 +81,7 @@ def ShowF():
         print("There's no entry")
         return
     allParticipants.sort(key=Comp)
-    for x in allParticipants:
-        print(x)
+    ListPrint(allParticipants)
     # print([x for x in allParticipants])
 
 
@@ -94,8 +93,7 @@ def ShowL():
         print("There's no entry")
         return
     allParticipants.sort(key=Comp)
-    for x in allParticipants:
-        print(x)
+    ListPrint(allParticipants)
 
 
 def Search():
@@ -152,7 +150,7 @@ def Search():
         schoolEntries = list(filter(FilterSchool, allParticipants))
 
         if len(schoolEntries) > 0:
-            ListPrint(schoolEntries)
+            ListPrint(schoolEntries,True)
             return
 
     with open("Schools_And_Competitions/Competitions.md") as file:
@@ -161,22 +159,22 @@ def Search():
     if searchFor in text:
         competitions = list(filter(FilterComp, allParticipants))
         if len(competitions) > 0:
-            ListPrint(competitions)
+            ListPrint(competitions,True)
             return
     firstNameEntries = list(filter(FilterFirstName, allParticipants))
     if len(firstNameEntries) == 0:
         lastNameEntries = list(filter(FilterLastName, allParticipants))
         if len(lastNameEntries) > 0:
-            ListPrint(lastNameEntries)
+            ListPrint(lastNameEntries,True)
             return
     else:
-        ListPrint(firstNameEntries)
+        ListPrint(firstNameEntries,True)
         return
     print("Can't find '{0}'".format(org))
     Search()
 
 
-def ListPrint(listOFEntries=None):
+def ListPrint(listOFEntries=None,search=False):
     def SortId(entry):
         return entry.Id
 
@@ -186,7 +184,8 @@ def ListPrint(listOFEntries=None):
         else:
             print("There's no entry")
     else:
-        listOFEntries.sort(key=SortId)
+        if search:
+            listOFEntries.sort(key=SortId)
         for x in listOFEntries:
             print(x)
 
