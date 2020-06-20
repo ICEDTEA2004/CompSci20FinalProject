@@ -1,14 +1,28 @@
+# Minh Au       #
+# Comp Sci 20   #
+# 20/06/2020    #
+#################
 from Final_Project import Functionalities as Func
 from Final_Project import Main_Program as Main
 import re  # to use search() for checking email
-import datetime
+import datetime  # to check date
 
+
+############################
+# Contestant's information #
+############################
 
 class Participant:
-    def __init__(self, loadData=None):
-        Main.state = "Inputting"
+    def __init__(self, loadData=None): # constructor
+        '''Input all the information of the contestant
+        Key Arguments:
+            - loadData:
+                + None if the user enters information manually
+                + str if reading from a file
+        '''
+        Main.state = "Inputting" # set the state of the program
 
-        if loadData is None:
+        if loadData is None: # enter the information manually
             print("----Enter participant's information----\n")
             self.Id = Func.GetInput("Please enter your Id: ", inputType=int)
             self.Name = Func.GetInput("Please enter your full name: ")
@@ -20,6 +34,7 @@ class Participant:
             self.score = Func.GetInput("Please enter your score: ", inputType=float)
             print("----    Done Entering Information    ----\n")
         else:
+            # dissect the string and analyze the information
             information = loadData.split()
             try:
                 self.Id = int(information[0])
@@ -73,6 +88,10 @@ class Participant:
         return " ".join(allInformation)
 
     def CalculateAge(self, birth):
+        '''Calculate the age of the contestant based on birthdate
+        Key Argument:
+            - birth: contestant birthdate, format: mm/dd/yyyy (date)
+        '''
         today = datetime.datetime.today()
         if today.month < birth.month or \
                 (today.month == birth.month and today.day < birth.day):
@@ -81,6 +100,7 @@ class Participant:
             return today.year - birth.year
 
     def CheckBirthAndAge(self):
+        '''Check if the birthday and age are correlated'''
         try:
             birth = self.birthday
         except AttributeError:
@@ -99,6 +119,7 @@ class Participant:
             else:
                 self.Age = Func.GetInput("Please enter your age: ", inputType=int)
 
+    # Getter functions of all the information
     @property
     def Id(self):
         return self._Id
@@ -141,10 +162,11 @@ class Participant:
 
     @Id.setter
     def Id(self, newId):
+        '''Check the validity of the ID'''
         if newId is None:
             self._Id = None
             return
-        while len(str(newId)) != 8 or newId in Func.allId:
+        while len(str(newId)) != 8 or newId in Func.allId: # check if it's the right format and if it's unique
             if newId in Func.allId:
                 print("{0} already exists. Please enter another one.".format(newId))
             else:
@@ -154,10 +176,10 @@ class Participant:
                 self._Id = None
                 return
         self._Id = newId
-        # Func.allId.add(newId)
 
     @Age.setter
     def Age(self, newAge):
+        '''Check the age of the contestant. The range is from 14 to 19 years old'''
         if newAge is None:
             return
         while newAge < 14:
@@ -168,7 +190,7 @@ class Participant:
             print("Too Old")
             newAge = Func.GetInput("Please enter your age: ", inputType=int)
         self._Age = newAge
-        confirmation = self.CheckBirthAndAge()
+        confirmation = self.CheckBirthAndAge() # check if it correlates with the birthday
         if type(confirmation) is str:
             if confirmation == "Canceled":
                 Main.state = "Inputting"
@@ -176,6 +198,7 @@ class Participant:
 
     @Name.setter
     def Name(self, newName):
+        '''Split the name to first name and last name'''
         if newName is None:
             return
         while len(newName.split()) <= 1:
@@ -189,6 +212,7 @@ class Participant:
 
     @email.setter
     def email(self, newEmail):
+        '''check the validity of the email'''
         if newEmail is None:
             return
         regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
@@ -199,6 +223,7 @@ class Participant:
 
     @schoolDistrict.setter
     def schoolDistrict(self, newSchool):
+        '''Check the validity of the school district'''
         if newSchool is None:
             return
         with open("Schools_And_Competitions/schoolDistricts.md") as file:
@@ -214,9 +239,11 @@ class Participant:
 
     @birthday.setter
     def birthday(self, newBirth):
+        '''Check the validity of the birthdate'''
+
         if newBirth is None:
             return
-        patterns = ['%m/%d/%Y', '%m %d %Y', '%m-%d-%Y', '%Y-%m-%d']
+        patterns = ['%m/%d/%Y', '%m %d %Y', '%m-%d-%Y', '%Y-%m-%d'] # different valid birthdate input
         while type(newBirth) is str:
             for x in range(len(patterns)):
                 try:
@@ -227,7 +254,7 @@ class Participant:
                         print("Invalid birthday. Type help for valid formats")
                         newBirth = Func.GetInput("Please enter your birthday (mm/dd/yyyy): ", date=True)
         self._birthday = newBirth
-        confirmation = self.CheckBirthAndAge()
+        confirmation = self.CheckBirthAndAge() # check if it correlates with the age
         if type(confirmation) is str:
             if confirmation == "Canceled":
                 Main.state = "Inputting"
@@ -235,6 +262,7 @@ class Participant:
 
     @competition.setter
     def competition(self, newComp):
+        '''Check the validity of the competition'''
         if newComp is None:
             return
         with open("Schools_And_Competitions\\Competitions.md") as file:
@@ -250,6 +278,8 @@ class Participant:
 
     @score.setter
     def score(self, newScore):
+        '''Check the validity of the score (percentage)'''
+
         if newScore is None:
             self._score = None
             return
