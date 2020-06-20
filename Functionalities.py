@@ -66,12 +66,32 @@ def Cancel():
         return False
 
 
+def DeleteEntry():
+    idToDel = GetInput("What entry do you want to delete? (Enter an ID) ", inputType=int)
+    if idToDel is None: # cancelling
+        return
+    while len(str(idToDel)) < 8:
+        idToDel = GetInput("Invalid ID")
+    if idToDel not in allId:
+        print("This ID does not exist")
+    else:
+        dummy = allId.pop(idToDel)
+
+        for x in range(len(allParticipants)):
+            if allParticipants[x] == dummy:
+                del allParticipants[x]
+                break
+
+
+
 def Add(data=None):
     if data is None:
         allParticipants.append(Participant())
+        allId[allParticipants[-1].Id] = allParticipants[-1]
     else:
         allParticipants.append(Participant(data))
-        allId[allParticipants[-1].Id] = allParticipants[-1]
+        if allParticipants[-1].Id is not None:
+            allId[allParticipants[-1].Id] = allParticipants[-1]
 
 
 def ShowF():
@@ -276,6 +296,7 @@ commandList = {"ADD": Add,
                "PRINT": ListPrint,
                "EXIT": ExitProg,
                "OPEN": Open,
+               "DEL": DeleteEntry,
                }
 currentFile = None
 
