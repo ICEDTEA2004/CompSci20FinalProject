@@ -71,6 +71,7 @@ def Add(data=None):
         allParticipants.append(Participant())
     else:
         allParticipants.append(Participant(data))
+        allId[allParticipants[-1].Id] = allParticipants[-1]
 
 
 def ShowF():
@@ -130,14 +131,11 @@ def Search():
     try:
         searchFor = int(searchFor)
         if searchFor in allId:
-            for x in allParticipants:
-                if x.Id == searchFor:
-                    print(x)
-                    return
+            print(allId[searchFor])
         else:
             print("There's no ID like ", searchFor)
             Search()
-            return
+        return
     except ValueError:
         pass
     org = searchFor
@@ -150,7 +148,7 @@ def Search():
         schoolEntries = list(filter(FilterSchool, allParticipants))
 
         if len(schoolEntries) > 0:
-            ListPrint(schoolEntries,True)
+            ListPrint(schoolEntries, True)
             return
 
     with open("Schools_And_Competitions/Competitions.md") as file:
@@ -159,24 +157,30 @@ def Search():
     if searchFor in text:
         competitions = list(filter(FilterComp, allParticipants))
         if len(competitions) > 0:
-            ListPrint(competitions,True)
+            ListPrint(competitions, True)
             return
     firstNameEntries = list(filter(FilterFirstName, allParticipants))
     if len(firstNameEntries) == 0:
         lastNameEntries = list(filter(FilterLastName, allParticipants))
         if len(lastNameEntries) > 0:
-            ListPrint(lastNameEntries,True)
+            ListPrint(lastNameEntries, True)
             return
     else:
-        ListPrint(firstNameEntries,True)
+        ListPrint(firstNameEntries, True)
         return
     print("Can't find '{0}'".format(org))
     Search()
 
 
-def ListPrint(listOFEntries=None,search=False):
+def ListPrint(listOFEntries=None, search=False):
     def SortId(entry):
         return entry.Id
+
+    if Main.state == "Exiting":
+        if len(allParticipants) > 0:
+            return sorted(allParticipants,key=SortId)
+        else:
+            return None
 
     if listOFEntries is None:
         if len(allParticipants) > 0:
@@ -197,22 +201,69 @@ def ExitProg():
         confirm = input("Enter Y for yes, N for No: ")
     if confirm == "Y":
         Main.state = "Exiting"
+        UpdateFile()
         return "Exiting"
 
 
-def Open():
-    fileName = GetInput("Please enter the file name: ")
+def UpdateFile():
+    if currentFile is None:
+        fileName = GetInput("Please enter the name of the file you want to save as: ")
+        if fileName is None:  # cancelling
+            return
+        while Open(fileName):
+            if fileName is None:  # cancelling
+                return
+            print(fileName + " already exists")
+            confirm = GetInput("Are you sure to overwrite this file? ")
+            while confirm not in ["y","Y","N","n"]:
+                print("Invalid input")
+                confirm = GetInput("Please enter y for Yes and n for No: ")
+            if confirm in ["N","n"]:
+                fileName = GetInput("Please enter the name of the file you want to save as: ")
+                continue
+            break
+        with open("Saved Database/" + fileName, "w") as file:
+            newData = ListPrint()
+            for x in newData:
+                print(x, file=file)
+    else:
+        with open("Saved Database/" + currentFile, "w") as file:
+            newData = ListPrint()
+            for x in newData:
+                print(x, file=file)
+    return
+
+
+def Open(fileName=None):
+    global currentFile
+    if currentFile is not None:
+        print(currentFile + " is open")
+        return
+    checking = False
     if fileName is None:
-        return None
+        fileName = GetInput("Please enter the file name: ")
+        if fileName is None:
+            return None
+    else:
+        checking = True
+
     try:
+        if checking:
+            return False
         with open("Saved Database/" + fileName) as file:
             text = file.read()
         text = text.split("\n")
         if len(text) != 0:
             for x in text:
+                if len(x) == 0:
+                    continue
                 Add(x)
+        currentFile = fileName
     except FileNotFoundError:
-        print("There's no file called " + fileName + ". Please try again")
+        if checking:
+            return True
+        else:
+            print("There's no file called " + fileName + ". Please try again")
         Open()
 
 
@@ -226,6 +277,7 @@ commandList = {"ADD": Add,
                "EXIT": ExitProg,
                "OPEN": Open,
                }
+currentFile = None
 
 allParticipants = []
-allId = set()
+allId = dict()

@@ -154,7 +154,7 @@ class Participant:
                 self._Id = None
                 return
         self._Id = newId
-        Func.allId.add(newId)
+        # Func.allId.add(newId)
 
     @Age.setter
     def Age(self, newAge):
